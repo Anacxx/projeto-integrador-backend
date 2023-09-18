@@ -160,7 +160,7 @@ export interface PostDB {
           comments: this.comments,
           createdAt: this.createdAt,
           updatedAt: this.updatedAt,
-          creatorId: this.creatorNick_name,
+          creatorId: this.creatorId,
           creatorNick_name:this.creatorNick_name,
         };
     }

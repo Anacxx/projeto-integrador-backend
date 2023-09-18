@@ -21,8 +21,6 @@ CREATE TABLE posts (
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
-drop TABLE post_comments;
-
 CREATE TABLE likes_dislikes (
   user_id TEXT NOT NULL,
   post_id TEXT NOT NULL,

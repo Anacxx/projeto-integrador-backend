@@ -73,47 +73,7 @@ export class PostController {
             } 
         }
     }
-    public editPost = async(req: Request, res: Response) => {
-        try {
-            const input = editPostSchema.parse({
-              token:req.headers.authorization,
-              idToEdit: req.params.id,
-              content: req.body.content
-            })
-            const output = await this.postBusiness.editPost(input)
-            return res.status(200).send(output);
-        } catch (error) {
-            console.log(error)
 
-            if (error instanceof BaseError) {
-              res.status(error.statusCode).send(error.message)
-            } else if (error instanceof ZodError) {
-              res.status(400).send(error.issues)
-            } else {
-              res.status(500).send("Unexpected error")
-            } 
-        }
-    }
-    public deletePost = async(req: Request, res: Response) => {
-        try {
-            const input = deletePostSchema.parse({
-              token: req.headers.authorization,
-              idToDelete: req.params.id
-            })
-            const output = await this.postBusiness.deletePost(input)
-            return res.status(200).send(output);
-        } catch (error) {
-            console.log(error)
-
-            if (error instanceof BaseError) {
-              res.status(error.statusCode).send(error.message)
-            } else if (error instanceof ZodError) {
-              res.status(400).send(error.issues)
-            } else {
-              res.status(500).send("Unexpected error")
-            } 
-        }
-    }
     public likeDislikePost = async(req: Request, res: Response) => {
         try {
             const input = likeDislikePostSchema.parse({

@@ -16,11 +16,7 @@ export class UserBusiness {
       private hashManager: HashManager,
       private tokenManager: TokenManager,
     ){}
-// métodos onde ficam as regras de negocio
-// gerar as uuid
-// hashear as senhas antes de guardar no banco de dados
-//deve ser um método assincrono que recebe um input no formatado 
-//retorna uma promise formatada
+
     public signup = async(input: signupInputDTO): Promise<signupOutputDTO> => {
 //recebendo o input desestruturado da controller
       const {nickName, email, password} = input
@@ -69,7 +65,7 @@ export class UserBusiness {
         
       const userDB = await this.userDatabase.findUserByEmail(email)
       if (!userDB) {
-            throw new NotFoundError('User not found');
+            throw new NotFoundError('Invalid Email');
       }
       const hashedPassword = userDB.password
       const isPasswordCorrect = await this.hashManager.compare(password, hashedPassword)

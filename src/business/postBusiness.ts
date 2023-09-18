@@ -1,13 +1,10 @@
 import { PostDatabase } from "../database/PostDatabase"
 import { UserDatabase } from "../database/UserDatabase"
 import { createPostInputDTO, createPostOutputDTO } from "../dtos/posts/createPost.dto"
-import { deletePostInputDTO, deletePostOutputDTO } from "../dtos/posts/deletePost.dto"
-import { editPostInputDTO, editPostOutputDTO } from "../dtos/posts/editPost.dto"
 import { getAllPostsInputDTO, getAllPostsOutputDTO } from "../dtos/posts/getAllPosts.dto"
 import { getPostByIdInputDTO, getPostByIdOutputDTO } from "../dtos/posts/getPostById.dto"
 import { likeDislikePostInputDTO, likeDislikePostOutputDTO } from "../dtos/posts/likeDislikePost.dto"
 import { BadRequestError } from "../errors/BadRequestError"
-import { ForbiddenError } from "../errors/ForbiddenError"
 import { NotFoundError } from "../errors/NotFoundError"
 import { UnauthorizedError } from "../errors/UnauthorizedError"
 import { LikeDislikeDB, POST_LIKE, Post, PostModel } from "../models/Posts"
@@ -83,12 +80,12 @@ export class PostBusiness {
             const postDB = await this.postDatabase.getPostById(id);
 
             if (!postDB) {
-              throw new Error('Este post não existe.')
+              throw new NotFoundError('The post does not exist')
             }
         //busca pelo criador do post
             const creatorDB = await this.userDatabase.findUserById(postDB.creator_id);
             if (!creatorDB) {
-              throw new Error('Este criador não existe.')
+              throw new NotFoundError('Creator not found')
             }
         //criação de uma instancia da classe Post com id e nome do criador.
             const post = new Post(
@@ -133,60 +130,6 @@ export class PostBusiness {
           const output: createPostOutputDTO = undefined
           return output
       };
-  
-        public editPost = async (input: editPostInputDTO): Promise<editPostOutputDTO> => {
-            const { idToEdit, token, content } = input;
-            const payload = this.tokenManager.getPayload(token)
-            if (!payload) {
-              throw new UnauthorizedError('Invalid Token')
-            }
-            const postToEdit = await this.postDatabase.getPostById(idToEdit);
-            if (!postToEdit) {
-              throw new NotFoundError('Post not found'); 
-            }
-            if (payload.id !== postToEdit.creator_id) {
-              throw new ForbiddenError('Only the creator can edit the post')
-            }
-            const post = new Post (
-              postToEdit.id,
-              postToEdit.content,
-              postToEdit.likes,
-              postToEdit.dislikes,
-              postToEdit.comments,
-              postToEdit.createdAt,
-              postToEdit.updatedAt,
-              postToEdit.creator_id,
-              payload.nickName
-            );
-            
-            post.setContent(content)
-            const updatedPost = post.toPostDB()
-            await this.postDatabase.updatePost(updatedPost)
-            const output: editPostOutputDTO = undefined
-            return output
-  
-        };
-  
-        public deletePost = async (input: deletePostInputDTO): Promise<deletePostOutputDTO> => {
-          const {token, idToDelete} = input
-          const payload = this.tokenManager.getPayload(token)
-            if (!payload) {
-              throw new UnauthorizedError('Invalid Token')
-            }
-          const postToDelete = await this.postDatabase.getPostById(idToDelete);
-          if (!postToDelete) {
-            throw new NotFoundError('Post not found');
-          }
-          if (payload.role !== USER_ROLES.ADMIN){
-            if (payload.id !== postToDelete.creator_id) {
-              throw new ForbiddenError("Only the creator of the post can delete it")
-            }
-    
-          }
-          await this.postDatabase.deletePostById(idToDelete);
-          const output: deletePostOutputDTO = undefined
-          return output;
-        };
 
           public likeDislikePost = async (input: likeDislikePostInputDTO): Promise<likeDislikePostOutputDTO> => {
             // Recebe os parâmetros de entrada: token, postId e like.

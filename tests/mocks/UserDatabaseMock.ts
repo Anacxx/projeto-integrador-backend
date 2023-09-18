@@ -9,7 +9,6 @@ const usersMock: UserDB[] = [
     password: "hash-mock-user1", // senha = "passwordUser1"
     role: USER_ROLES.NORMAL
   },
-
   {
     id: "id-mock-user2",
     nickName: "User2",
